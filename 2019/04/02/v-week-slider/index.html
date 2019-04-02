@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="写在最前面···之前在做一个手机端项目的时候，需要一个左右滑动（按周滑动）选择日期插件，而且当时这个项目没有用到Vue。当时又没有找到合适的第三方插件，就花了点时间用原生JavaScript写了出来，当时心中就想把它写成基于Vue的组件，这短时间闲了把它弄出来了！，在这个过程中遇到了一个坑，后面会提出来！ 先看效果 思路根据用户传入日期（不传默认今天），获取上一周，当周，下一周对应的日期放数组da">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个基于Vue无限滑动选择日期的手机端组件">
+<meta property="og:url" content="http://yoursite.com/2019/04/02/v-week-slider/index.html">
+<meta property="og:site_name" content="Sanmu`s notes">
+<meta property="og:description" content="写在最前面···之前在做一个手机端项目的时候，需要一个左右滑动（按周滑动）选择日期插件，而且当时这个项目没有用到Vue。当时又没有找到合适的第三方插件，就花了点时间用原生JavaScript写了出来，当时心中就想把它写成基于Vue的组件，这短时间闲了把它弄出来了！，在这个过程中遇到了一个坑，后面会提出来！ 先看效果 思路根据用户传入日期（不传默认今天），获取上一周，当周，下一周对应的日期放数组da">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2019/04/02/v-week-slider/v-week-slider/v-week-slider.gif">
+<meta property="og:updated_time" content="2019-04-02T07:01:06.330Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个基于Vue无限滑动选择日期的手机端组件">
+<meta name="twitter:description" content="写在最前面···之前在做一个手机端项目的时候，需要一个左右滑动（按周滑动）选择日期插件，而且当时这个项目没有用到Vue。当时又没有找到合适的第三方插件，就花了点时间用原生JavaScript写了出来，当时心中就想把它写成基于Vue的组件，这短时间闲了把它弄出来了！，在这个过程中遇到了一个坑，后面会提出来！ 先看效果 思路根据用户传入日期（不传默认今天），获取上一周，当周，下一周对应的日期放数组da">
+<meta name="twitter:image" content="http://yoursite.com/2019/04/02/v-week-slider/v-week-slider/v-week-slider.gif">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/04/02/v-week-slider/">
+
+
+
+
+
+  <title>一个基于Vue无限滑动选择日期的手机端组件 | Sanmu`s notes</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Sanmu`s notes</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/02/v-week-slider/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="sanmu">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sanmu`s notes">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一个基于Vue无限滑动选择日期的手机端组件</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-02T14:26:20+08:00">
+                2019-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="写在最前面···"><a href="#写在最前面···" class="headerlink" title="写在最前面···"></a>写在最前面···</h2><p>之前在做一个手机端项目的时候，需要一个左右滑动（按周滑动）选择日期插件，而且当时这个项目没有用到Vue。当时又没有找到合适的第三方插件，就花了点时间用原生JavaScript写了出来，当时心中就想把它写成基于Vue的组件，这短时间闲了把它弄出来了！，在这个过程中遇到了一个坑，后面会提出来！</p>
+<h2 id="先看效果"><a href="#先看效果" class="headerlink" title="先看效果"></a>先看效果</h2><p><img src="v-week-slider/v-week-slider.gif" alt></p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>根据用户传入日期（不传默认今天），获取上一周，当周，下一周对应的日期放数组dates里<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> vm = <span class="keyword">this</span></span><br><span class="line"><span class="keyword">this</span>.dates.push(</span><br><span class="line">    &#123;</span><br><span class="line">        date: moment(vm.defaultDate).subtract(<span class="number">7</span>, <span class="string">'d'</span>).format(<span class="string">'YYYY-MM-DD'</span>),</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        date: vm.defaultDate,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        date: moment(vm.defaultDate).add(<span class="number">7</span>, <span class="string">'d'</span>).format(<span class="string">'YYYY-MM-DD'</span>),</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br></pre></td></tr></table></figure></p>
+<p>根据datas 生成每一周对应的日期</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">getDaies (date) &#123;</span><br><span class="line">            <span class="keyword">let</span> vm = <span class="keyword">this</span>,</span><br><span class="line">                arr = []</span><br><span class="line">            <span class="keyword">let</span> weekOfDate = <span class="built_in">Number</span>(moment(date).format(<span class="string">'E'</span>))</span><br><span class="line">            <span class="keyword">let</span> weeks = [<span class="string">'日'</span>, <span class="string">'一'</span>, <span class="string">'二'</span>, <span class="string">'三'</span>, <span class="string">'四'</span>, <span class="string">'五'</span>, <span class="string">'六'</span>]</span><br><span class="line">            <span class="keyword">let</span> today = moment()</span><br><span class="line">            <span class="keyword">let</span> defaultDay = moment(vm.defaultDate)</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; <span class="number">7</span>; i++) &#123;</span><br><span class="line">                <span class="keyword">let</span> _theDate = moment(date).subtract(weekOfDate - i, <span class="string">'d'</span>)</span><br><span class="line">                arr.push(&#123;</span><br><span class="line">                    date: _theDate.format(<span class="string">'YYYY-MM-DD'</span>),</span><br><span class="line">                    week: weeks[i],</span><br><span class="line">                    isToday: _theDate.format(<span class="string">'YYYY-MM-DD'</span>) === today.format(<span class="string">'YYYY-MM-DD'</span>),</span><br><span class="line">                    isDay: _theDate.format(<span class="string">'E'</span>) === defaultDay.format(<span class="string">'E'</span>)</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> arr</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>生成每一个滑动单元的style<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">getTransform (index) &#123;</span><br><span class="line">    <span class="keyword">let</span> vm = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">let</span> style = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (index === vm.activeIndex) &#123;</span><br><span class="line">        style[<span class="string">'transform'</span>] = <span class="string">'translateX('</span>+ vm.distan.x +<span class="string">'px)'</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (index &lt; vm.activeIndex) &#123;</span><br><span class="line">        style[<span class="string">'transform'</span>] = <span class="string">'translateX(-100%)'</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (index &gt; vm.activeIndex) &#123;</span><br><span class="line">        style[<span class="string">'transform'</span>] = <span class="string">'translateX(100%)'</span></span><br><span class="line">    &#125;</span><br><span class="line">    style[<span class="string">'transition'</span>] = vm.isAnimation ? <span class="string">'transform 0.5s ease-out'</span> : <span class="string">'transform 0s ease-out'</span></span><br><span class="line">    <span class="keyword">return</span> style</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后就是处理touchstart touchend touchmove事件了，这里就不贴代码了，说下逻辑：</p>
+<ul>
+<li>touchstart 记录滑动起点位置</li>
+<li>touchmove 获得滑动距离赋值给 vm.distan.x 实时获得当前周transform</li>
+<li>touchend 改变activeIndex的值，当然改变activeIndex的值是不够的，要实现无限滑动，就要在操作一下dates，如果是左滑删除dates的第一个元素并且往dates里面push下下周对应日期，如果是右滑删除最后一个元素并网数组前面unshift上上周对应的日期</li>
+</ul>
+<h2 id="坑点"><a href="#坑点" class="headerlink" title="坑点"></a>坑点</h2><p>因为这个组件是通过css3的transition来实现动画的，最开始我是把所用三个滑动元素在css里面写了transition:transform 0.5s ease-out; 谁知道自己把自己坑了，因为最后我们改变activeIndex后要删除一个日期，还要往数组里面新增一个元素，这样就会引起dates的改变，进而引起Vue去重新更新界面，导致动画又出来了！最后想到的解决办法就是引入一个变量isAnimation来控制transition的值，只有当滑动的时才开启过度动画效果，再侦听transitionend时间重置isAnimation = false后再更新dates</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><pre><code class="html">import weekSlider from 'v-week-slider'
+
+Vue.use(weekSlider)
+
+<span class="tag">&lt;<span class="name">week-slider</span> @<span class="attr">dateClick</span>=<span class="string">"dateClickhandler"</span> <span class="attr">:showYear</span>=<span class="string">"true"</span> <span class="attr">:defaultDate.sync</span>=<span class="string">"default_date"</span>&gt;</span><span class="tag">&lt;/<span class="name">week-slider</span>&gt;</span>
+</code></pre>
+<h2 id="Props"><a href="#Props" class="headerlink" title="Props"></a>Props</h2><table>
+<thead>
+<tr>
+<th style="text-align:left">prop</th>
+<th style="text-align:left">必选</th>
+<th style="text-align:left">类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">defaultDate</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">String</td>
+<td>指定日期，默认今天，YYYY-MM-DD</td>
+</tr>
+<tr>
+<td style="text-align:left">showYear</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">Boolean</td>
+<td>是否显示当前周所属年月，默认false</td>
+</tr>
+<tr>
+<td style="text-align:left">activeBgColor</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">String</td>
+<td>指定日期背景颜色，，默认’rgba(182, 30, 40, .5)’</td>
+</tr>
+<tr>
+<td style="text-align:left">todayBgColor</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">String</td>
+<td>今天背景颜色，默认’rgba(182, 30, 40, 1)’</td>
+</tr>
+<tr>
+<td style="text-align:left">activeTxtColor</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">String</td>
+<td>指定日期文字颜色，默认’rgba(255, 255, 255, 1)’</td>
+</tr>
+<tr>
+<td style="text-align:left">todayTxtColor</td>
+<td style="text-align:left">false</td>
+<td style="text-align:left">String</td>
+<td>j今天文字颜色，默认’rgba(255, 255, 255, 1)’</td>
+</tr>
+</tbody>
+</table>
+<h2 id="events"><a href="#events" class="headerlink" title="events"></a>events</h2><table>
+<thead>
+<tr>
+<th style="text-align:left">名称</th>
+<th style="text-align:left">说明</th>
+<th style="text-align:left">回调参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">dateClick</td>
+<td style="text-align:left">点击日期触发时间</td>
+<td style="text-align:left">点击的日期（YYYY-MM-DD）</td>
+</tr>
+</tbody>
+</table>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p><a href="https://github.com/LinSky/v-weekSlider" target="_blank" rel="noopener">github地址</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/02/js-deep-clone/" rel="prev" title="js-deep-clone">
+                js-deep-clone <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">sanmu</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最前面···"><span class="nav-number">1.</span> <span class="nav-text">写在最前面···</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#先看效果"><span class="nav-number">2.</span> <span class="nav-text">先看效果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#思路"><span class="nav-number">3.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#坑点"><span class="nav-number">4.</span> <span class="nav-text">坑点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">5.</span> <span class="nav-text">使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Props"><span class="nav-number">6.</span> <span class="nav-text">Props</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#events"><span class="nav-number">7.</span> <span class="nav-text">events</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">8.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sanmu</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
